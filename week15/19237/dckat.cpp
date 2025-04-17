@@ -13,6 +13,7 @@ int smellWho[20][20];           // 냄새-상어 정보 매핑
 int dx[] = {-1, 1, 0, 0};
 int dy[] = {0, 0, -1, 1};
 int N, M, K;
+int out = 0;
 
 void input() {
     cin >> N >> M >> K;
@@ -114,10 +115,20 @@ void move() {
 
             // 냄새 없는 칸 발견
             if (canMove(nx, ny)) {
-                // 더 작은 번호의 상어가 이동
-                if (boardNext[nx][ny] == 0 || boardNext[nx][ny] > no) {
+                // 빈 공간에 상어가 들어온 경우 (추방 X)
+                if (boardNext[nx][ny] == 0) {
                     boardNext[nx][ny] = no;
                     dir[no] = priority[no][sharkDir][k];
+                }
+                // 번호가 더 작은 상어가 온 경우 (추방)
+                else if (boardNext[nx][ny] > no) {
+                    boardNext[nx][ny] = no;
+                    dir[no] = priority[no][sharkDir][k];
+                    out++;
+                }
+                // 이동칸에 이미 번호가 작은 상어가 있는 경우 (추방)
+                else if (board[nx][ny] <= no) {
+                    out++;
                 }
                 ok = true;
                 break;
@@ -178,7 +189,7 @@ void solution() {
         move();
         
         // 1마리만 남았는지 확인
-        if (check()) {
+        if (out == M-1) {
             break;
         }
         ans++;
